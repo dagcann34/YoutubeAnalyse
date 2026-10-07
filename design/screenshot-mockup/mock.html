@@ -1,0 +1,177 @@
+<!doctype html>
+<html><head><meta charset="UTF-8">
+<!--
+  Store screenshot frame (1280x800): a fake browser with the real side panel in an iframe.
+  ?lang=tr|en  ?page=watch|home  ?tab=<tab label prefix>  ?action=keywords|transcript  ?hover=<0..1>
+  Rendered by render.sh.
+-->
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { width: 1280px; height: 800px; overflow: hidden; background: #0F0F0F; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; color: #fff; }
+  .chrome { height: 84px; background: #202124; border-bottom: 1px solid #3c4043; }
+  .tabs { height: 40px; display: flex; align-items: flex-end; padding-left: 80px; gap: 4px; position: relative; }
+  .lights { position: absolute; left: 14px; top: 14px; display: flex; gap: 8px; }
+  .lights i { width: 12px; height: 12px; border-radius: 50%; display: block; }
+  .tab { height: 34px; width: 240px; background: #35363a; border-radius: 10px 10px 0 0; display: flex; align-items: center; gap: 8px; padding: 0 12px; font-size: 12px; color: #e8eaed; }
+  .tab .fav { width: 16px; height: 12px; border-radius: 3px; background: #9aa0a6; }
+  .tab span { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .bar { height: 44px; background: #35363a; display: flex; align-items: center; gap: 14px; padding: 0 12px; }
+  .nav { color: #9aa0a6; font-size: 16px; letter-spacing: 10px; }
+  .url { flex: 1; height: 30px; background: #202124; border-radius: 15px; display: flex; align-items: center; padding: 0 14px; font-size: 13px; color: #bdc1c6; }
+  .url b { color: #e8eaed; font-weight: 400; }
+  .ext { width: 22px; height: 22px; border-radius: 5px; outline: 2px solid #8ab4f8; outline-offset: 3px; }
+  .main { display: flex; height: 716px; }
+  .page { flex: 1; padding: 20px 24px; overflow: hidden; }
+  .player { width: 100%; aspect-ratio: 16/9; max-height: 470px; border-radius: 12px; position: relative; overflow: hidden;
+    background: radial-gradient(circle at 30% 40%, #c88a4a 0, #8a5a2b 30%, #3b2614 70%, #1a120a 100%); }
+  .player .loaf { position: absolute; left: 50%; top: 52%; width: 360px; height: 200px; transform: translate(-50%,-50%);
+    border-radius: 50% 50% 44% 44% / 62% 62% 38% 38%; background: radial-gradient(circle at 45% 35%, #e9b878, #b8772f 55%, #6e3f12 100%);
+    box-shadow: 0 30px 60px rgba(0,0,0,.5); }
+  .player .score { position: absolute; left: 50%; top: 46%; width: 220px; height: 14px; transform: translate(-50%,-50%) rotate(-8deg); border-radius: 50%; background: #f3d9a8; opacity: .7; }
+  .progress { position: absolute; left: 0; right: 0; bottom: 0; height: 44px; background: linear-gradient(transparent, rgba(0,0,0,.7)); }
+  .progress::before { content: ''; position: absolute; left: 12px; right: 12px; bottom: 34px; height: 3px; background: rgba(255,255,255,.3); }
+  .progress::after { content: ''; position: absolute; left: 12px; width: 38%; bottom: 34px; height: 3px; background: #FF0000; }
+  .ptime { position: absolute; left: 14px; bottom: 10px; font-size: 12px; color: #ddd; }
+  h1 { font-size: 20px; font-weight: 700; margin-top: 14px; line-height: 1.35; }
+  .meta { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
+  .avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #f2a65a, #c0392b); }
+  .ch b { display: block; font-size: 15px; } .ch small { color: #aaa; font-size: 12px; }
+  .sub { margin-left: 16px; background: #f1f1f1; color: #0f0f0f; border-radius: 18px; padding: 9px 16px; font-size: 14px; font-weight: 600; }
+  .pill { margin-left: auto; background: #272727; border-radius: 18px; padding: 9px 16px; font-size: 14px; }
+  .desc { margin-top: 12px; background: #272727; border-radius: 12px; padding: 12px; font-size: 13px; color: #ddd; line-height: 1.5; }
+  .panel { width: 400px; border-left: 1px solid #3c4043; display: flex; flex-direction: column; background: #0F0F0F; }
+  .phead { height: 40px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: #202124; border-bottom: 1px solid #3c4043; font-size: 13px; color: #e8eaed; }
+  .phead img { width: 16px; height: 16px; } .phead .x { margin-left: auto; color: #9aa0a6; }
+  iframe { flex: 1; border: 0; width: 100%; }
+
+  .feed { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px 16px; }
+  .card .th { position: relative; aspect-ratio: 16/9; border-radius: 12px; overflow: hidden; }
+  .card .dur { position: absolute; right: 6px; bottom: 6px; background: rgba(0,0,0,.8); font-size: 11px; font-weight: 600; padding: 1px 4px; border-radius: 4px; }
+  .card .row { display: flex; gap: 10px; margin-top: 10px; }
+  .card .av { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; }
+  .card b { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 14px; line-height: 1.35; }
+  .card small { display: block; color: #aaa; font-size: 12px; margin-top: 3px; }
+  .chips { display: flex; gap: 10px; margin-bottom: 18px; }
+  .chips span { background: #272727; border-radius: 8px; padding: 6px 12px; font-size: 13px; }
+  .chips span:first-child { background: #f1f1f1; color: #0f0f0f; }
+  .dagcanyt-badge { position: absolute; top: 6px; left: 6px; z-index: 5; padding: 2px 7px; border-radius: 6px;
+    font: 700 11px/1.5 Roboto, Arial, sans-serif; letter-spacing: .2px; color: #fff; background: rgba(15,23,42,.85); box-shadow: 0 1px 3px rgba(0,0,0,.4); }
+  .dagcanyt-badge[data-tier="hot"] { background: linear-gradient(90deg, #e11d48, #9333ea); }
+  .dagcanyt-badge[data-tier="warm"] { background: #ea580c; }
+  .dagcanyt-badge[data-tier="mild"] { background: #0e7490; }
+</style></head>
+<body>
+  <div class="chrome">
+    <div class="tabs">
+      <div class="lights"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div>
+      <div class="tab"><div class="fav"></div><span id="tabTitle"></span>✕</div>
+    </div>
+    <div class="bar">
+      <div class="nav">←→↻</div>
+      <div class="url" id="url"></div>
+      <img class="ext" src="icon-48.png">
+    </div>
+  </div>
+  <div class="main">
+    <div class="page" id="page"></div>
+    <div class="panel">
+      <div class="phead"><img src="icon-16.png"> <span id="panelTitle"></span> <span class="x">✕</span></div>
+      <iframe id="frame"></iframe>
+    </div>
+  </div>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const lang = params.get('lang') || 'tr';
+    const tr = lang === 'tr';
+    const page = params.get('page') || 'watch';
+    const tab = params.get('tab');
+    const action = params.get('action');
+    const hover = params.get('hover');
+
+    document.getElementById('panelTitle').textContent = tr
+      ? 'DagcanYT – YouTube için Ücretsiz Analiz ve SEO Araçları'
+      : 'DagcanYT – Free Analytics & SEO Tools for YouTube';
+    document.getElementById('frame').src = `panel.html?lang=${lang}`;
+
+    const title = tr
+      ? 'Evde Ekşi Mayalı Ekmek Nasıl Yapılır? Adım Adım Tarif (Başlangıç Rehberi)'
+      : 'How to Make Sourdough Bread at Home – Step by Step (Beginner Guide)';
+
+    if (page === 'watch') {
+      document.getElementById('tabTitle').textContent = title;
+      document.getElementById('url').innerHTML = '<b>youtube.com</b>/watch?v=mK8xP2qLw7c';
+      document.getElementById('page').innerHTML = `
+        <div class="player"><div class="loaf"></div><div class="score"></div><div class="progress"></div><div class="ptime">4:12 / 11:05</div></div>
+        <h1>${title}</h1>
+        <div class="meta">
+          <div class="avatar"></div>
+          <div class="ch"><b>${tr ? 'Mutfak Atölyesi' : 'The Bread Workshop'}</b><small>${tr ? '412 B abone' : '412K subscribers'}</small></div>
+          <div class="sub">${tr ? 'Abone ol' : 'Subscribe'}</div>
+          <div class="pill">👍 ${tr ? '48 B' : '48K'} &nbsp;|&nbsp; 👎</div>
+          <div class="pill" style="margin-left:0">↗ ${tr ? 'Paylaş' : 'Share'}</div>
+        </div>
+        <div class="desc"><b>${tr ? '1,2 Mn görüntüleme · 7 ay önce' : '1.2M views · 7 months ago'}</b><br>${tr
+          ? 'Ekşi mayayı sıfırdan nasıl hazırlayacağınızı ve çıtır kabuklu bir köy ekmeğini evde nasıl pişireceğinizi adım adım anlatıyorum…'
+          : 'I show you step by step how to make a sourdough starter from scratch and bake a crusty country loaf at home…'}</div>`;
+    } else {
+      document.getElementById('tabTitle').textContent = 'YouTube';
+      document.getElementById('url').innerHTML = '<b>youtube.com</b>';
+      // [title tr, title en, channel, views tr, views en, age tr, age en, badge, tier, colors]
+      const cards = [
+        ['Ekmek Bıçağı Testi: Hangisi Gerçekten Kesiyor?', 'Bread Knife Test: Which One Actually Cuts?', 'Kitchen Gear Lab', '1,8 Mn', '1.8M', '2 gün önce', '2 days ago', '~925K', 'hot', '#334155,#0f172a'],
+        ['24 Saatte Ekşi Maya Başlatmak', 'Sourdough Starter in 24 Hours', 'Oven Notes', '412 B', '412K', '1 hafta önce', '1 week ago', '~59K', 'warm', '#7c2d12,#1c1917'],
+        ['Tam Buğday Ekmeği – Hamur Yoğurmadan', 'No-Knead Whole Wheat Bread', 'The Bread Workshop', '96 B', '96K', '3 hafta önce', '3 weeks ago', '~4.6K', 'mild', '#a16207,#422006'],
+        ['Fırında Çıtır Simit Tarifi', 'Crispy Oven Bagels Recipe', 'Home Bakery', '38 B', '38K', '2 ay önce', '2 months ago', '~624', 'cold', '#9a3412,#292524'],
+        ['Pizza Hamuru İçin 5 Altın Kural', '5 Golden Rules for Pizza Dough', 'Napoli Club', '2,4 Mn', '2.4M', '1 ay önce', '1 month ago', '~79K', 'warm', '#991b1b,#1f1315'],
+        ['Döküm Tencere Rehberi', 'The Dutch Oven Guide', 'Kitchen Gear Lab', '210 B', '210K', '4 ay önce', '4 months ago', '~1.7K', 'mild', '#1e3a8a,#0b1020'],
+      ];
+      const perDay = tr ? '/gün' : '/day';
+      document.getElementById('page').innerHTML = `
+        <div class="chips">${(tr ? ['Tümü', 'Yemek', 'Ekmek', 'Tarifler', 'Son yüklenenler'] : ['All', 'Cooking', 'Bread', 'Recipes', 'Recently uploaded']).map((c) => `<span>${c}</span>`).join('')}</div>
+        <div class="feed">${cards.map((c, i) => {
+          const [a, b] = c[9].split(',');
+          return `<div class="card">
+            <div class="th" style="background: radial-gradient(circle at ${30 + i * 9}% 40%, ${a}, ${b})">
+              <div class="dagcanyt-badge" data-tier="${c[8]}">${c[7]}${perDay}</div><span class="dur">${8 + i}:${10 + i * 7}</span>
+            </div>
+            <div class="row"><div class="av" style="background: linear-gradient(135deg, ${a}, #f2a65a)"></div>
+              <div><b>${tr ? c[0] : c[1]}</b><small>${c[2]}</small><small style="margin-top:0">${tr ? c[3] + ' görüntüleme' : c[4] + ' views'} · ${tr ? c[5] : c[6]}</small></div></div>
+          </div>`;
+        }).join('')}</div>`;
+    }
+
+    const frame = document.getElementById('frame');
+    function find(doc, selector, text) {
+      return [...doc.querySelectorAll(selector)].find((el) => el.textContent.trim().startsWith(text));
+    }
+    function run(attempt = 0) {
+      const doc = frame.contentDocument;
+      const button = doc && tab && find(doc, '.grid-cols-3 > button', tab);
+      if (!button) {
+        if (tab && attempt < 100) setTimeout(() => run(attempt + 1), 50);
+        return;
+      }
+      button.click();
+      setTimeout(() => {
+        if (action === 'keywords') {
+          const form = doc.querySelector('form');
+          doc.querySelector('form input[type="checkbox"], form + label input')?.click();
+          form.querySelector('button[type="submit"]').click();
+          setTimeout(() => form.closest('.rounded-2xl').scrollIntoView({ block: 'start' }), 400);
+        }
+        if (action === 'transcript') {
+          find(doc, 'button', tr ? 'Transkripti Getir' : 'Get transcript').click();
+          setTimeout(() => find(doc, 'span', tr ? 'Transkript' : 'Transcript').closest('.rounded-2xl').scrollIntoView({ block: 'start' }), 300);
+        }
+        if (hover) {
+          const svg = doc.querySelector('svg[role="img"]');
+          const r = svg.getBoundingClientRect();
+          svg.dispatchEvent(new PointerEvent('pointermove', {
+            bubbles: true, clientX: r.left + r.width * Number(hover), clientY: r.top + r.height / 2,
+          }));
+        }
+      }, 150);
+    }
+    frame.addEventListener('load', () => run());
+  </script>
+</body></html>

@@ -1,0 +1,16 @@
+{
+  "appName": {
+    "message": "DagcanYT – Free Analytics & SEO Tools for YouTube",
+    "description": "Extension name shown in the Chrome Web Store and chrome://extensions (max 75 chars)."
+  },
+  "appShortName": {
+    "message": "DagcanYT"
+  },
+  "appDescription": {
+    "message": "Free YouTube analytics: hidden tags, outlier score, keyword research, transcripts, thumbnail tools and view tracking.",
+    "description": "Max 132 chars."
+  },
+  "actionTitle": {
+    "message": "Open DagcanYT panel"
+  }
+}

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1F1F1F"/>
+      <stop offset="1" stop-color="#0F0F0F"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="124" height="124" rx="28" fill="url(#bg)" stroke="#333333" stroke-width="2"/>
+  <!-- Bold "D" -->
+  <path fill="#FF0000" fill-rule="evenodd"
+        d="M26 22 H62 A42 42 0 0 1 62 106 H26 Z
+           M46 42 H61 A22 22 0 0 1 61 86 H46 Z"/>
+  <!-- Rising analytics bars inside the D -->
+  <rect x="51" y="70" width="7" height="11" rx="2" fill="#3EA6FF"/>
+  <rect x="61" y="61" width="7" height="20" rx="2" fill="#3EA6FF"/>
+  <rect x="71" y="51" width="7" height="30" rx="2" fill="#3EA6FF"/>
+</svg>

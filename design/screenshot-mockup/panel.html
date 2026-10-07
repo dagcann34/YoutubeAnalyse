@@ -1,0 +1,148 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<!-- Loads the built side panel (assets copied by render.sh) with a fake `chrome` API and sample data. ?lang=tr|en -->
+<script>
+  const lang = new URLSearchParams(location.search).get('lang') || 'tr';
+  const tr = lang === 'tr';
+  const DAY = 86400000;
+  const now = Date.now();
+
+  const sample = {
+    videoId: 'mK8xP2qLw7c',
+    title: tr
+      ? 'Evde Ekşi Mayalı Ekmek Nasıl Yapılır? Adım Adım Tarif (Başlangıç Rehberi)'
+      : 'How to Make Sourdough Bread at Home – Step by Step (Beginner Guide)',
+    channelTitle: tr ? 'Mutfak Atölyesi' : 'The Bread Workshop',
+    channelId: 'UCmutfak',
+    viewCount: 1284503,
+    likeCount: 48210,
+    commentCount: 2184,
+    publishedAt: new Date(now - 207 * DAY).toISOString(),
+    tags: tr
+      ? ['ekşi maya', 'ekşi mayalı ekmek', 'ekmek tarifi', 'evde ekmek yapımı', 'ekşi maya nasıl yapılır',
+        'sourdough', 'doğal maya', 'köy ekmeği', 'ekmek nasıl yapılır', 'kolay ekmek tarifi',
+        'tam buğday ekmeği', 'ekşi maya besleme', 'fırın tarifleri', 'mutfak atölyesi', 'ev yapımı ekmek',
+        'çıtır kabuklu ekmek', 'ekmek hamuru', 'başlangıç rehberi', 'yemek tarifleri', 'pratik tarifler']
+      : ['sourdough', 'sourdough bread', 'bread recipe', 'homemade bread', 'how to make sourdough',
+        'sourdough starter', 'artisan bread', 'easy bread recipe', 'baking', 'beginner sourdough',
+        'whole wheat bread', 'feeding starter', 'oven recipes', 'bread workshop', 'crusty bread',
+        'bread dough', 'beginner guide', 'recipes', 'easy recipes', 'no knead bread'],
+    engagementRate: 3.92,
+    isShort: false,
+    seoScore: 75,
+    descriptionLength: 840,
+    viewsPerHour: 258,
+    daysOld: 207,
+    estimatedRevenue: { min: 1541.4, max: 5780.26 },
+  };
+
+  // Five days of snapshots every ~6 hours with a slightly uneven daily rhythm.
+  const series = (start, perDay, days = 5) =>
+    Array.from({ length: days * 4 + 1 }, (_, i) => ({
+      t: now - (days * DAY) + i * (DAY / 4),
+      views: Math.round(start + perDay * (i / 4) + Math.sin(i * 1.3) * perDay * 0.04),
+    }));
+  const watch = (videoId, title, channelTitle, start, perDay, ageDays) => ({
+    videoId, title, channelTitle, isShort: false, addedAt: now - ageDays * DAY, snapshots: series(start, perDay),
+  });
+  const watchlist = Object.fromEntries([
+    watch(sample.videoId, sample.title, sample.channelTitle, 1284503 - 6200 * 5, 6200, 5),
+    watch('a1', tr ? 'Rakip: 24 Saatte Ekşi Maya Başlatmak (Hızlı Yöntem)' : 'Competitor: Starting a Sourdough Starter in 24 Hours', tr ? 'Fırın Defteri' : 'Oven Notes', 412000, 18400, 4),
+    watch('a2', tr ? 'Tam Buğday Ekmeği – Hamur Yoğurmadan' : 'No-Knead Whole Wheat Bread', tr ? 'Mutfak Atölyesi' : 'The Bread Workshop', 96500, 2100, 3),
+    watch('a3', tr ? 'Ekmek Bıçağı Testi: Hangisi Gerçekten Kesiyor?' : 'Bread Knife Test: Which One Actually Cuts?', tr ? 'Mutfak Gereçleri' : 'Kitchen Gear Lab', 1850000, 41000, 2),
+  ].map((item) => [item.videoId, item]));
+
+  const store = { settings: { lang, badges: true }, watchlist };
+
+  const transcript = (tr
+    ? ['Merhaba, bugün evde sıfırdan ekşi mayalı ekmek yapıyoruz.', 'Önce ekşi mayamızı besleyip 6 saat bekletiyoruz.',
+       'Un, su ve tuzu bu oranlarda karıştırıyoruz.', 'Hamuru 30 dakika dinlendirip ilk katlamayı yapıyoruz.',
+       'Toplam dört kez katlama yapacağız, aralarında yarım saat var.', 'Şimdi hamuru şekillendirip mayalanma sepetine alıyoruz.',
+       'Bir gece buzdolabında soğuk mayalanma çok önemli.', 'Fırını döküm tencereyle birlikte 250 dereceye ısıtıyoruz.',
+       'Jiletle üstüne derin bir çizik atıyoruz.', 'Kapağı kapalı 20 dakika, açık 25 dakika pişiriyoruz.',
+       'İşte çıtır kabuklu, delikli içli ekmeğimiz hazır!']
+    : ['Hi, today we are making sourdough bread from scratch at home.', 'First we feed the starter and let it rise for 6 hours.',
+       'Mix flour, water and salt in these ratios.', 'Rest the dough for 30 minutes, then do the first fold.',
+       "We'll fold four times in total, half an hour apart.", 'Now shape the dough and move it into the proofing basket.',
+       'An overnight cold proof in the fridge is the key step.', 'Preheat the oven to 250°C with the Dutch oven inside.',
+       'Score the top with a deep cut using a razor blade.', 'Bake 20 minutes covered, then 25 minutes uncovered.',
+       'And here is our crusty, open-crumb loaf!']
+  ).map((text, i) => ({ time: `${Math.floor(i * 58 / 60)}:${String((i * 58) % 60).padStart(2, '0')}`, text }));
+
+  const noopEvent = { addListener() {}, removeListener() {} };
+  Object.defineProperty(window, 'chrome', { configurable: true, value: {
+    i18n: { getUILanguage: () => lang },
+    storage: {
+      local: {
+        get: async (key) => ({ [key]: store[key] }),
+        set: async (items) => Object.assign(store, items),
+      },
+      onChanged: noopEvent,
+    },
+    tabs: {
+      query: async () => [{ id: 1, url: 'https://www.youtube.com/watch?v=' + sample.videoId }],
+      sendMessage: async (_id, message) => {
+        if (message.type === 'GET_VIDEO_DATA') return { ok: true, data: sample };
+        if (message.type === 'GET_CHANNEL_STATS') return { ok: true, stats: { medianViews: 286000, sampleSize: 30 } };
+        if (message.type === 'GET_TRANSCRIPT') return { ok: true, segments: transcript };
+      },
+      create: async () => {},
+      onActivated: noopEvent, onUpdated: noopEvent,
+    },
+    runtime: { onMessage: noopEvent, sendMessage: async () => ({ ok: true }) },
+  }});
+
+  // YouTube search suggestions, answered locally.
+  const suggestions = tr
+    ? ['ekşi maya', 'ekşi maya nasıl yapılır', 'ekşi mayalı ekmek tarifi', 'ekşi maya besleme', 'ekşi maya ekmek',
+       'ekşi maya yapımı', 'ekşi mayalı ekmek nasıl yapılır', 'ekşi maya ile ekmek', 'ekşi maya bekletme süresi',
+       'ekşi mayalı tam buğday ekmeği', 'ekşi maya hazırlama', 'ekşi maya ölmüş mü', 'ekşi mayalı pizza',
+       'ekşi maya kokusu', 'ekşi maya saklama', 'ekşi mayalı köy ekmeği', 'ekşi maya başlatma', 'ekşi mayalı simit',
+       'ekşi maya fırın ayarı', 'ekşi mayalı ekmek döküm tencere', 'ekşi mayalı focaccia', 'ekşi maya kabarmıyor']
+    : ['sourdough', 'sourdough starter', 'sourdough bread recipe', 'sourdough for beginners', 'sourdough discard recipes',
+       'sourdough starter from scratch', 'sourdough bread', 'sourdough focaccia', 'sourdough scoring', 'sourdough pizza',
+       'sourdough not rising', 'sourdough dutch oven', 'sourdough bagels', 'sourdough whole wheat', 'sourdough cold proof',
+       'sourdough shaping', 'sourdough sandwich bread', 'sourdough baking temperature', 'sourdough crumb', 'sourdough english muffins'];
+  const realFetch = window.fetch;
+  window.fetch = async (url, init) => {
+    const href = String(url);
+    if (href.startsWith('https://suggestqueries.google.com/')) {
+      const q = new URL(href).searchParams.get('q');
+      const offset = q.length % 7;
+      const list = suggestions.slice(offset).concat(suggestions.slice(0, offset)).slice(0, 10);
+      return new Response(JSON.stringify([q, list]), { headers: { 'content-type': 'application/json' } });
+    }
+    return realFetch(url, init);
+  };
+
+  // Replace YouTube thumbnails with a drawn placeholder so the screenshots contain no third-party artwork.
+  function placeholderThumb() {
+    const c = document.createElement('canvas');
+    c.width = 640; c.height = 360;
+    const g = c.getContext('2d');
+    const bg = g.createRadialGradient(200, 140, 10, 320, 180, 420);
+    bg.addColorStop(0, '#c88a4a'); bg.addColorStop(0.35, '#8a5a2b'); bg.addColorStop(1, '#1a120a');
+    g.fillStyle = bg; g.fillRect(0, 0, 640, 360);
+    const loaf = g.createRadialGradient(290, 160, 10, 320, 190, 190);
+    loaf.addColorStop(0, '#e9b878'); loaf.addColorStop(0.55, '#b8772f'); loaf.addColorStop(1, '#6e3f12');
+    g.fillStyle = loaf; g.beginPath(); g.ellipse(320, 200, 190, 110, 0, 0, Math.PI * 2); g.fill();
+    g.fillStyle = 'rgba(243,217,168,.7)'; g.beginPath(); g.ellipse(320, 175, 110, 8, -0.14, 0, Math.PI * 2); g.fill();
+    g.fillStyle = '#fff'; g.font = '900 54px system-ui, sans-serif'; g.textAlign = 'left';
+    g.lineWidth = 8; g.strokeStyle = '#000'; g.strokeText(tr ? 'EKŞİ MAYA' : 'SOURDOUGH', 28, 70); g.fillText(tr ? 'EKŞİ MAYA' : 'SOURDOUGH', 28, 70);
+    return c.toDataURL('image/jpeg', 0.9);
+  }
+  const thumb = placeholderThumb();
+  new MutationObserver(() => {
+    document.querySelectorAll('img[src^="https://i.ytimg.com/"]').forEach((img) => {
+      // The hidden maxres probe keeps its URL meaning "available"; just swap the visible ones.
+      img.src = thumb;
+    });
+  }).observe(document, { childList: true, subtree: true });
+</script>
+<script type="module" src="./assets/panel.js"></script>
+<link rel="stylesheet" href="./assets/panel.css">
+</head>
+<body><div id="root"></div></body>
+</html>

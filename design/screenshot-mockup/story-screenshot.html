@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="UTF-8">
+<!-- Needs story.js and i18n.js: npx esbuild src/utils/storyCard.ts src/i18n/index.ts --bundle --format=esm --outdir=<dir> --entry-names=[name] && mv <dir>/storyCard.js <dir>/story.js && mv <dir>/index.js <dir>/i18n.js -->
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { width: 1280px; height: 800px; overflow: hidden; font-family: 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif; color: #fff;
+    background: radial-gradient(circle at 85% 20%, rgba(244,63,94,.25), transparent 45%), radial-gradient(circle at 10% 90%, rgba(147,51,234,.22), transparent 50%), linear-gradient(135deg, #07090E, #0B0F1A 55%, #1A0B1E); }
+  .wrap { display: flex; align-items: center; gap: 80px; height: 100%; padding: 0 110px; }
+  .copy { flex: 1; }
+  .eyebrow { display: inline-block; padding: 8px 16px; border-radius: 999px; background: rgba(244,63,94,.12); border: 1px solid rgba(244,63,94,.35); color: #FB7185; font-weight: 700; font-size: 15px; letter-spacing: .08em; }
+  h1 { font-size: 54px; line-height: 1.12; font-weight: 800; margin-top: 26px; }
+  h1 span { background: linear-gradient(90deg, #F43F5E, #A855F7); -webkit-background-clip: text; color: transparent; }
+  p { margin-top: 22px; font-size: 21px; line-height: 1.55; color: #94A3B8; max-width: 520px; }
+  ul { margin-top: 28px; list-style: none; display: grid; gap: 12px; font-size: 18px; color: #CBD5E1; }
+  li::before { content: '✓'; color: #34D399; font-weight: 800; margin-right: 12px; }
+  .card { height: 704px; border-radius: 28px; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.08); }
+  .card canvas { height: 704px; width: auto; display: block; }
+</style></head>
+<body>
+  <div class="wrap">
+    <div class="copy">
+      <span class="eyebrow">PAYLAŞ</span>
+      <h1>Analizi tek tıkla <span>hikaye kartına</span> dönüştür</h1>
+      <p>Video istatistiklerini Instagram hikayesi boyutunda (1080×1920) bir PNG olarak indir ya da WhatsApp ve X'te paylaş.</p>
+      <ul>
+        <li>SEO skoru, izlenme, beğeni ve etkileşim</li>
+        <li>Tahmini gelir aralığı</li>
+        <li>WhatsApp ve X için hazır mesaj</li>
+      </ul>
+    </div>
+    <div class="card" id="card"></div>
+  </div>
+  <script type="module">
+    import { renderStoryCard } from './story.js';
+    import { makeT } from './i18n.js';
+    const source = await (await fetch('./panel.html')).text();
+    const sample = new Function(source.match(/(const sample = \{[\s\S]*?\n  \};)/)[1] + '\nreturn sample;')();
+    document.getElementById('card').appendChild(renderStoryCard(sample, makeT('tr'), 'tr'));
+  </script>
+</body></html>
