@@ -498,6 +498,20 @@ export default function App() {
             {activeTab === 'share' && <ShareCard data={data} />}
           </div>
         )}
+
+        <footer className="flex items-center justify-center gap-1.5 pt-1 text-[10px] text-slate-500">
+          <span>{t('madeBy')}</span>
+          <span>·</span>
+          <a
+            href="https://github.com/dagcann34/YoutubeAnalyse"
+            target="_blank"
+            rel="noreferrer"
+            className="text-slate-400 underline-offset-2 hover:text-rose-400 hover:underline"
+          >
+            GitHub
+          </a>
+          <span>· v{chrome.runtime.getManifest().version}</span>
+        </footer>
       </div>
     </LangContext.Provider>
   );

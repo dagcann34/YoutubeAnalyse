@@ -91,7 +91,7 @@
       create: async () => {},
       onActivated: noopEvent, onUpdated: noopEvent,
     },
-    runtime: { onMessage: noopEvent, sendMessage: async () => ({ ok: true }) },
+    runtime: { onMessage: noopEvent, sendMessage: async () => ({ ok: true }), getManifest: () => ({ version: '1.1.1' }) },
   }});
 
   // YouTube search suggestions, answered locally.

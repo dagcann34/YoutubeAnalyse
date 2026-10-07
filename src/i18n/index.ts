@@ -2,6 +2,7 @@ export type Lang = 'tr' | 'en';
 
 const tr = {
   free: 'ÜCRETSİZ',
+  madeBy: 'Dağcan Nural tarafından geliştirildi',
   subtitle: 'YouTube SEO & Analiz',
   refresh: 'Yenile',
   settings: 'Ayarlar',
@@ -146,6 +147,7 @@ export type TKey = keyof typeof tr;
 
 const en: Record<TKey, string> = {
   free: 'FREE',
+  madeBy: 'Made by Dağcan Nural',
   subtitle: 'YouTube SEO & Analytics',
   refresh: 'Refresh',
   settings: 'Settings',

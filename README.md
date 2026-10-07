@@ -74,8 +74,8 @@ YouTube ana sayfasında her videonun üstünde günlük izlenme hızı. Renkler:
 
 Eklenti şu anda Chrome Web Mağazası'nda değil; GitHub'dan indirip 1 dakikada kurabilirsin. Chrome, Edge, Brave ve Opera gibi Chromium tabanlı tarayıcılarda çalışır.
 
-1. **İndir:** [Releases](https://github.com/dagcann34/YoutubeAnalyse/releases/latest) sayfasından `dagcanyt-v1.1.0.zip` dosyasını indir.
-2. **Zip'i aç:** Dosyaya çift tıkla. `dagcanyt-v1.1.0` adında bir klasör oluşur. Bu klasörü silinmeyecek bir yere taşı (ör. `Belgeler`), çünkü Chrome eklentiyi her açılışta bu klasörden yükler.
+1. **İndir:** [Releases](https://github.com/dagcann34/YoutubeAnalyse/releases/latest) sayfasından `dagcanyt-v1.1.1.zip` dosyasını indir.
+2. **Zip'i aç:** Dosyaya çift tıkla. `dagcanyt-v1.1.1` adında bir klasör oluşur. Bu klasörü silinmeyecek bir yere taşı (ör. `Belgeler`), çünkü Chrome eklentiyi her açılışta bu klasörden yükler.
 3. **Eklentiler sayfasını aç:** Adres çubuğuna `chrome://extensions` yaz ve Enter'a bas.
 4. **Geliştirici modunu aç:** Sağ üstteki **Geliştirici modu** anahtarını aç.
 5. **Yükle:** Sol üstte beliren **Paketlenmemiş öğe yükle** butonuna tıkla ve 2. adımdaki klasörü seç (içinde `manifest.json` olan klasör).
@@ -208,6 +208,6 @@ DagcanYT bağımsız bir araçtır; YouTube veya Google ile bağlantılı değil
 
 **DagcanYT** is a free Chrome extension that shows YouTube analytics and SEO data in Chrome's side panel: outlier score vs. the channel median, estimated earnings, hidden tags, keyword research from YouTube search suggestions, transcripts, thumbnail download and preview, views-per-day badges on YouTube thumbnails, and a tracking list that records real view growth. English and Turkish UI. No account, no server, no ads.
 
-**Install:** download `dagcanyt-v1.1.0.zip` from [Releases](https://github.com/dagcann34/YoutubeAnalyse/releases/latest) and unzip it. Then open `chrome://extensions`, turn on **Developer mode**, click **Load unpacked** and select the unzipped folder. Pin the extension, open a YouTube video and click the DagcanYT icon.
+**Install:** download `dagcanyt-v1.1.1.zip` from [Releases](https://github.com/dagcann34/YoutubeAnalyse/releases/latest) and unzip it. Then open `chrome://extensions`, turn on **Developer mode**, click **Load unpacked** and select the unzipped folder. Pin the extension, open a YouTube video and click the DagcanYT icon.
 
 **Develop:** `npm install`, then `npm run build` (output in `dist/`), `npm run dev` (watch build), `npm run zip` (release package). Screenshots: [design/store-screenshots/en](design/store-screenshots/en).
